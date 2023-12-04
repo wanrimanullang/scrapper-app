@@ -7,7 +7,7 @@ import csv
 
 reddit = praw.Reddit(client_id='1fVF21JTWEKv3oydcmfmbg',
                     client_secret='oliFQH4M7_mshYBrBdGrkEE9A5kjlg',
-                    user_agent='scrapper-crypto by onlyManullang')
+                    user_agent='')
 
 
 subreddit_name = 'crypto'
@@ -17,14 +17,14 @@ year_ago = datetime.utcnow() - timedelta(days=365)
 
 reddit_results = []
 
-for _ in range(1000):
-    for submission in subreddit.search(search_keywords, time_filter='year'):
-        if submission.created_utc >= year_ago.timestamp():
-            reddit_results.append({
-                'Title': submission.title,
-                'URL': submission.url,
-                'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat()
-            })
+for submission in subreddit.search(search_keywords, time_filter='year'):
+    if submission.created_utc >= year_ago.timestamp():
+        reddit_results.append({
+            'Title': submission.title,
+            'URL': submission.url,
+            'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat()
+        })
+        
 print(reddit_results)
 
 with open('output.csv', 'w', newline='') as csv_file:
