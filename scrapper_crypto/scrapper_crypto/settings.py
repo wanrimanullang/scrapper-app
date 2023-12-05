@@ -38,7 +38,6 @@ REST_FRAMEWORK = {
 INSTALLED_APPS = [
     'rest_framework',
     'scrapper_crypto',
-    'scrapper_api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

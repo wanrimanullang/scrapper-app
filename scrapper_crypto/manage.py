@@ -7,6 +7,10 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scrapper_crypto.settings')
+    
+    project_path = r'C:\Users\WanriParasianS\Documents\Manullang\scrapper-api'
+    sys.path.insert(0, project_path)
+    
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
