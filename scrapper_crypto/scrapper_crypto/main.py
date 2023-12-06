@@ -8,7 +8,7 @@ import csv
 
 reddit = praw.Reddit(client_id='1fVF21JTWEKv3oydcmfmbg',
                     client_secret='oliFQH4M7_mshYBrBdGrkEE9A5kjlg',
-                    user_agent='scrapper-crypto by onlyManullang')
+                    user_agent='user_agent')
 
 api_key = 'AIzaSyA0cwQobkZ0bc3JQMMqLvRO6IYnswVphcM'
 youtube = build('youtube', 'v3', developerKey=api_key)
