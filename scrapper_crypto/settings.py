@@ -65,7 +65,7 @@ ROOT_URLCONF = 'scrapper_crypto.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'scrapper_crypto', 'templates')],
+        # 'DIRS': [os.path.join(BASE_DIR, 'scrapper_crypto', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
