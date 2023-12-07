@@ -43,9 +43,6 @@ class ScrapDataAPIReddit(APIView):
                     'URL': submission.url,
                     'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat()
                 })
-        # return Response({
-        #     'reddit_results': reddit_results,
-        # })
         return render(request, 'reddit_results.html', {'reddit_results': reddit_results})
         
 class ScrapDataAPIYoutube(APIView):
