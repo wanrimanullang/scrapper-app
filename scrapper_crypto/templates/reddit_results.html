@@ -66,7 +66,7 @@
             <input type="text" id="search_keywords" name="search_keywords" required>
             <button type="submit">Search</button>
         </form>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="">
             {% for item in reddit_results %}
                 <div class="bg-white p-4 rounded-md shadow-md">
                     <h2 class="text-xl font-bold mb-2">{{ item.Title }}</h2>
@@ -78,6 +78,16 @@
                         <span class="text-gray-700">Posted:</span>
                         <p class="text-gray-700 ml-2">{{ item.Posted }}</p>
                     </div>
+                    {% for comment in reddit_comments %}
+                    <div class="bg-white shadow-md p-4 mb-4">
+                        <p class="text-gray-600 mb-2">{{ comment.author }}</p>
+                        <p class="text-gray-800">{{ comment.comment_text }}</p>
+                        <p class="text-gray-500 text-sm mt-2">{{ comment.posted }}</p>
+                    </div>
+                    {% endfor %}
+                    {% if reddit_comments|length == 0 %}
+                        <p class="text-gray-600">Tidak ada komentar ditemukan.</p>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>        

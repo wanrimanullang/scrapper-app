@@ -33,6 +33,7 @@ class ScrapDataAPIReddit(APIView):
         year_ago = datetime.utcnow() - timedelta(days=365)
 
         reddit_results = []
+        reddit_comments = []
 
         for submission in subreddit.search(search_keywords, time_filter='year'):
             if submission.created_utc >= year_ago.timestamp():
@@ -42,7 +43,21 @@ class ScrapDataAPIReddit(APIView):
                     'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat()
                 })
                 
-        return render(request, 'reddit_results.html', {'reddit_results': reddit_results})
+                submission.comments.replace_more(limit=None)
+                comment_count = 0
+                for comment in submission.comments.list():
+                    reddit_comments.append({
+                        'author': comment.author.name if comment.author else '[deleted]',
+                        'comment_text': comment.body,
+                        'posted': datetime.utcfromtimestamp(comment.created_utc).isoformat(),
+                    })
+                    comment_count += 1
+
+                    if comment_count >= 10:
+                        break
+                    
+
+        return render(request, 'reddit_results.html', {'reddit_results': reddit_results,'reddit_comments': reddit_comments})
 
 class ScrapDataAPIYoutube(APIView):
     API_KEY_YOUTUBE = os.environ.get('API_KEY_YOUTUBE')
@@ -73,7 +88,6 @@ class ScrapDataAPIYoutube(APIView):
         
         video_ids = [item['id']['videoId'] for item in search_response['items']]
         
-        print(video_ids, "test")
         comments_response = []
         for video_id in video_ids:
             try:
