@@ -3,6 +3,8 @@ import os
 
 from django.shortcuts import render
 from django.http import JsonResponse
+import json
+from googleapiclient.errors import HttpError
 
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -39,9 +41,7 @@ class ScrapDataAPIReddit(APIView):
                     'URL': submission.url,
                     'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat()
                 })
-        # return Response({
-        #     'reddit_results': reddit_results,
-        # })
+                
         return render(request, 'reddit_results.html', {'reddit_results': reddit_results})
 
 class ScrapDataAPIYoutube(APIView):
@@ -67,7 +67,27 @@ class ScrapDataAPIYoutube(APIView):
             q=search_keywords,
             part='id,snippet',
             type='video',
-            maxResults=20
-            ).execute()
+            maxResults=20,
+            videoSyndicated='true',
+        ).execute()
+        
+        video_ids = [item['id']['videoId'] for item in search_response['items']]
+        
+        print(video_ids, "test")
+        comments_response = []
+        for video_id in video_ids:
+            try:
+                    comments = youtube.commentThreads().list(
+                        part='snippet',
+                        videoId=video_id,
+                        maxResults=10
+                    ).execute()
+                    comments_response.extend(comments.get('items', []))
+            except HttpError as e:
+                    error_details = json.loads(e.content.decode('utf-8'))
+                    if any(error.get('reason') == 'commentsDisabled' for error in error_details.get('error', {}).get('errors', [])):
+                        print(f"Comments are disabled for video with ID: {video_id}")
+                    else:
+                        print(f"Error fetching comments for video with ID {video_id}: {error_details}")
 
-        return render(request, 'youtube_results.html', {'youtube_results': search_response})
+        return render(request, 'youtube_results.html', {'youtube_results': search_response,'comments': comments_response,})
