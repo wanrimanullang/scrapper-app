@@ -81,7 +81,7 @@
                     {% for comment in reddit_comments %}
                     <div class="bg-white shadow-md p-4 mb-4">
                         <p class="text-gray-600 mb-2">{{ comment.author }}</p>
-                        <p class="text-gray-800">{{ comment.comment_text }}</p>
+                        <p class="text-gray-800 line-clamp-3">{{ comment.comment_text }}</p>
                         <p class="text-gray-500 text-sm mt-2">{{ comment.posted }}</p>
                     </div>
                     {% endfor %}
