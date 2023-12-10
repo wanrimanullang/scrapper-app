@@ -37,28 +37,36 @@ class ScrapDataAPIReddit(APIView):
 
         for submission in subreddit.search(search_keywords, time_filter='year'):
             if submission.created_utc >= year_ago.timestamp():
+                comments = submission.comments.list()
+                modify_posted = lambda comment_datail: {
+                     'posted': datetime.utcfromtimestamp(comment_datail.created_utc).isoformat(),
+                     'author': comment_datail.author.name if comment_datail.author else '[deleted]',
+                     'comment_text': comment_datail.body
+                }
                 reddit_results.append({
                     'Title': submission.title,
                     'URL': submission.url,
                     'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat(),
-                    'Id': submission.id
+                    'Id': submission.id,
+                    'Comments': list(map(modify_posted, comments))
                 })
                 
-                submission.comments.replace_more(limit=None)
-                comment_count = 0
-                for comment in submission.comments.list():
-                    reddit_comments.append({
-                        'author': comment.author.name if comment.author else '[deleted]',
-                        'comment_text': comment.body,
-                        'posted': datetime.utcfromtimestamp(comment.created_utc).isoformat(),
-                    })
-                    comment_count += 1
+                # submission.comments.replace_more(limit=None)
+                # comment_count = 0
+                # for comment in submission.comments.list():
+                #     reddit_comments.append({
+                #         'author': comment.author.name if comment.author else '[deleted]',
+                #         'comment_text': comment.body,
+                #         'posted': datetime.utcfromtimestamp(comment.created_utc).isoformat(),
+                #     })
+                #     comment_count += 1
 
-                    if comment_count >= 10:
-                        break
+                #     if comment_count >= 10:
+                #         break
                     
 
-        return render(request, 'reddit_results.html', {'reddit_results': reddit_results,'reddit_comments': reddit_comments})
+        return render(request, 'reddit_results.html', {'reddit_results': reddit_results})
+        # return render(request, 'reddit_results.html', {'reddit_results': reddit_results,'reddit_comments': reddit_comments})
 
 class ScrapDataAPIYoutube(APIView):
     API_KEY_YOUTUBE = os.environ.get('API_KEY_YOUTUBE')
