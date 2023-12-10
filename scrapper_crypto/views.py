@@ -27,7 +27,7 @@ class ScrapDataAPIReddit(APIView):
                     client_secret=self.CLIENT_SECRET_REDDIT,
                     user_agent=self.SELF_AGENT)
 
-        subreddit_name = "crypto"
+        subreddit_name = "all"
         subreddit = reddit.subreddit(subreddit_name)
         search_keywords = request.GET.get('search_keywords', '')
         year_ago = datetime.utcnow() - timedelta(days=365)
@@ -37,19 +37,19 @@ class ScrapDataAPIReddit(APIView):
 
         for submission in subreddit.search(search_keywords, time_filter='year'):
             if submission.created_utc >= year_ago.timestamp():
-                comments = submission.comments.list()
-                modify_posted = lambda comment_datail: {
-                     'posted': datetime.utcfromtimestamp(comment_datail.created_utc).isoformat(),
-                     'author': comment_datail.author.name if comment_datail.author else '[deleted]',
-                     'comment_text': comment_datail.body
-                }
+                # comments = submission.comments.list()
+                # modify_posted = lambda comment_datail: {
+                #      'posted': datetime.utcfromtimestamp(comment_datail.created_utc).isoformat(),
+                #      'author': comment_datail.author.name if comment_datail.author else '[deleted]',
+                #      'comment_text': comment_datail.body
+                # }
                 reddit_results.append({
                     'Title': submission.title,
                     'URL': submission.url,
                     'IframeURL': submission.url.replace('https://www.reddit.com', 'https://reddit.artemisdigital.io'),
                     'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat(),
                     'Id': submission.id,
-                    'Comments': list(map(modify_posted, comments))
+                    # 'Comments': list(map(modify_posted, comments))
                 })
                 
                 # submission.comments.replace_more(limit=None)
