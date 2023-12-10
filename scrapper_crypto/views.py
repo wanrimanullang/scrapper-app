@@ -40,7 +40,8 @@ class ScrapDataAPIReddit(APIView):
                 reddit_results.append({
                     'Title': submission.title,
                     'URL': submission.url,
-                    'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat()
+                    'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat(),
+                    'Id': submission.id
                 })
                 
                 submission.comments.replace_more(limit=None)

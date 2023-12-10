@@ -57,6 +57,7 @@
         }
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto mt-10">
@@ -66,27 +67,61 @@
             <input type="text" id="search_keywords" name="search_keywords" required>
             <!-- <button type="submit">Search</button> -->
         </form>
-        <div class="">
-            {% for item in reddit_results %}
-                <div class="bg-white p-4 rounded-md shadow-md">
-                    <a href="{{ item.URL }}" class="text-xl font-bold mb-2 hover:underline" target="_blank" rel="noopener noreferrer">{{ item.Title }}</a>
-                    <div class="flex items-center">
-                        <span class="text-gray-700">Posted:</span>
-                        <p class="text-gray-700 ml-2">{{ item.Posted }}</p>
+        <div>
+            <div class="mb-8">
+                <div class="grid grid-cols-8 mb-4 gap-8">
+                    <div class="md:col-span-4 lg:col-span-4 col-span-8">
+                        {% for item in reddit_results %}
+                            <div class="bg-white p-4 rounded-md shadow-md w-full cursor-pointer reddit-topic mb-4" data-reddit-id="{{item.Id}}">
+                                <p class="text-xl font-bold mb-2" rel="noopener noreferrer">{{ item.Title }}</p>
+                                <div class="flex items-center">
+                                    <span class="text-gray-700">Posted:</span>
+                                    <p class="text-gray-700 ml-2">{{ item.Posted }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                    {% for comment in reddit_comments %}
-                    <div class="bg-white shadow-md p-4 mb-4">
-                        <p class="text-gray-600 mb-2">{{ comment.author }}</p>
-                        <p class="text-gray-800 line-clamp-3">{{ comment.comment_text }}</p>
-                        <p class="text-gray-500 text-sm mt-2">{{ comment.posted }}</p>
+                    <div class="md:col-span-4 lg:col-span-4 col-span-8">
+                        <div class="w-full sticky top-0 h-min">
+                            <p class="text-center text-3xl mb-3 font-semibold"> Selected Reddit </p>
+                            {% for item in reddit_results %}
+                                <div class="bg-white p-4 rounded-md shadow-md w-full reddit-topic-detail" data-reddit-id="{{item.Id}}">
+                                    <a href="{{ item.URL }}" class="text-xl font-bold mb-2 hover:underline" target="_blank" rel="noopener noreferrer">{{ item.Title }}</a>
+                                    <div class="flex items-center">
+                                        <span class="text-gray-700">Posted:</span>
+                                        <p class="text-gray-700 ml-2">{{ item.Posted }}</p>
+                                    </div>
+                                    {% for comment in reddit_comments %}
+                                    <div class="bg-white shadow-md p-4 mb-4">
+                                        <p class="text-gray-600 mb-2">{{ comment.author }}</p>
+                                        <p class="text-gray-800 line-clamp-3">{{ comment.comment_text|safe }}</p>
+                                        <p class="text-gray-500 text-sm mt-2">{{ comment.posted }}</p>
+                                    </div>
+                                    {% endfor %}
+                                    {% if reddit_comments|length == 0 %}
+                                        <p class="text-gray-600">No comments found.</p>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                    {% endfor %}
-                    {% if reddit_comments|length == 0 %}
-                        <p class="text-gray-600">Tidak ada komentar ditemukan.</p>
-                    {% endif %}
                 </div>
-            {% endfor %}
+            </div>
         </div>        
     </div>
+    <script>
+        $(document).ready(function () {
+            $(".reddit-topic").click(function () {
+                var selectedTopic = $(this).data("reddit-id");
+
+                // Hide all comments
+                $(".reddit-topic-detail").hide();
+
+                // // Show only comments for the selected topic
+                $(".reddit-topic-detail[data-reddit-id='" + selectedTopic + "']").show();
+            });
+            $(".reddit-topic:first").click();
+        });
+    </script>
 </body>
 </html>
