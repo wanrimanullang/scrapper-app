@@ -83,15 +83,22 @@
                     </div>
                     <div class="md:col-span-4 lg:col-span-4 col-span-8">
                         <div class="w-full sticky top-0 h-min">
-                            <p class="text-center text-3xl mb-3 font-semibold"> Selected Reddit </p>
+                            <!-- <p class="text-center text-3xl mb-3 font-semibold"> Selected Reddit </p> -->
                             {% for item in reddit_results %}
                                 <div class="bg-white p-4 rounded-md shadow-md w-full reddit-topic-detail" data-reddit-id="{{item.Id}}">
                                     <a href="{{ item.URL }}" class="text-xl font-bold mb-2 hover:underline" target="_blank" rel="noopener noreferrer">{{ item.Title }}</a>
+                                    <iframe
+                                        width="100%"
+                                        src="{{ item.IframeURL }}"
+                                        frameborder="0"
+                                        allowfullscreen
+                                        style="min-height: 600px;"
+                                    ></iframe>
                                     <div class="flex items-center">
                                         <span class="text-gray-700">Posted:</span>
                                         <p class="text-gray-700 ml-2">{{ item.Posted }}</p>
                                     </div>
-                                    {% for comment in item.Comments %}
+                                    <!-- {% for comment in item.Comments %}
                                     <div class="bg-white shadow-md p-4 mb-4">
                                         <p class="text-gray-600 mb-2">{{ comment.author }}</p>
                                         <p class="text-gray-800 line-clamp-4">{{ comment.comment_text|safe }}</p>
@@ -100,7 +107,7 @@
                                     {% endfor %}
                                     {% if item.Comments|length == 0 %}
                                         <p class="text-gray-600">No comments found.</p>
-                                    {% endif %}
+                                    {% endif %} -->
                                 </div>
                             {% endfor %}
                         </div>

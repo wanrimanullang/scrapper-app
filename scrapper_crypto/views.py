@@ -46,6 +46,7 @@ class ScrapDataAPIReddit(APIView):
                 reddit_results.append({
                     'Title': submission.title,
                     'URL': submission.url,
+                    'IframeURL': submission.url.replace('https://www.reddit.com', 'https://reddit.artemisdigital.io'),
                     'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat(),
                     'Id': submission.id,
                     'Comments': list(map(modify_posted, comments))
