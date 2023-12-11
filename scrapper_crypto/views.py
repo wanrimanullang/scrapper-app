@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from googleapiclient.errors import HttpError
+from datetime import datetime, timedelta
 
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -12,6 +13,11 @@ from rest_framework.response import Response
 from datetime import datetime, timedelta
 from googleapiclient.discovery import build
 import praw
+import re 
+
+def clean_html_tags(text):
+    clean_text = re.sub(r'<.*?>', '', text)
+    return clean_text
 
 class ScrapDataAPIReddit(APIView):
     CLIENT_ID_REDDIT =  os.environ.get('CLIENT_ID_REDDIT')
@@ -72,46 +78,54 @@ class ScrapDataAPIReddit(APIView):
 class ScrapDataAPIYoutube(APIView):
     API_KEY_YOUTUBE = os.environ.get('API_KEY_YOUTUBE')
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.youtube_results = []
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
-
     def get(self, request, format=None, *args, **kwargs):
-        api_key = self.API_KEY_YOUTUBE
-        youtube = build('youtube', 'v3', developerKey=api_key)
+        youtube = build('youtube', 'v3', developerKey=self.API_KEY_YOUTUBE)
 
         search_keywords = request.GET.get('search_keywords', '')
         year_ago = datetime.utcnow() - timedelta(days=365)
 
         search_response = []
 
-        search_response = youtube.search().list(
-            q=search_keywords,
-            part='id,snippet',
-            type='video',
-            maxResults=20,
-            videoSyndicated='true',
-        ).execute()
-        
-        video_ids = [item['id']['videoId'] for item in search_response['items']]
-        
-        comments_response = []
-        for video_id in video_ids:
-            try:
+        try:
+            search_response = youtube.search().list(
+                q=search_keywords,
+                part='id,snippet',
+                type='video',
+                maxResults=20,
+                videoSyndicated='true',
+            ).execute()
+
+            video_ids = [item['id']['videoId'] for item in search_response.get('items', [])]
+            comments_response = []
+
+            for video_id in video_ids:
+                try:
                     comments = youtube.commentThreads().list(
                         part='snippet',
                         videoId=video_id,
                         maxResults=10
                     ).execute()
                     comments_response.extend(comments.get('items', []))
-            except HttpError as e:
+
+                except HttpError as e:
                     error_details = json.loads(e.content.decode('utf-8'))
                     if any(error.get('reason') == 'commentsDisabled' for error in error_details.get('error', {}).get('errors', [])):
                         print(f"Comments are disabled for video with ID: {video_id}")
                     else:
                         print(f"Error fetching comments for video with ID {video_id}: {error_details}")
 
-        return render(request, 'youtube_results.html', {'youtube_results': search_response,'comments': comments_response,})
+            for comment in comments_response:
+                comment_text = comment['snippet']['topLevelComment']['snippet']['textDisplay']
+                cleaned_comment_text = clean_html_tags(comment_text)
+                comment['snippet']['topLevelComment']['snippet']['cleaned_text'] = cleaned_comment_text
+
+                comment_date = comment['snippet']['topLevelComment']['snippet']['publishedAt']
+                formatted_comment_date = datetime.strptime(comment_date, "%Y-%m-%dT%H:%M:%S%z").strftime("%d %m %Y %m %H")
+                comment['snippet']['topLevelComment']['snippet']['formatted_comment_date'] = formatted_comment_date
+
+        except HttpError as e:
+            error_details = json.loads(e.content.decode('utf-8'))
+            print(f"Error searching videos: {error_details}")
+            return HttpResponse(status=500)
+
+        return render(request, 'youtube_results.html', {'youtube_results': search_response, 'comments': comments_response})
