@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from googleapiclient.errors import HttpError
-from datetime import datetime, timedelta
 
 from rest_framework import generics
 from rest_framework.views import APIView
