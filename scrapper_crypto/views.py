@@ -37,23 +37,30 @@ class ScrapDataAPIReddit(APIView):
 
         for submission in subreddit.search(search_keywords, sort='new', time_filter='year', limit=None):
             # if submission.created_utc >= year_ago.timestamp():
-                # submission.comments.replace_more(limit=5)
-                # comments = submission.comments.list()
-                # modify_posted = lambda comment_datail: {
-                #     # 'posted': datetime.utcfromtimestamp(comment_datail.created_utc).isoformat(),
-                #     'author': comment_datail.author.name if comment_datail.author else '[deleted]',
-                #     'comment_text': comment_datail.body,
-                #     'permalink': comment_datail.permalink
-                # }
-                reddit_results.append({
-                    'Title': submission.title,
-                    'URL': submission.url,
-                    'IframeURL': submission.url.replace('https://www.reddit.com', 'https://reddit.artemisdigital.io'),
-                    'Posted': datetime.utcfromtimestamp(submission.created_utc).isoformat(),
-                    'Id': submission.id,
-                    # 'Comments': comments
-                    # 'Comments': list(map(modify_posted, comments))
-                })
+                submission.comments.replace_more(limit=None)
+                comments = submission.comments.list()
+                modify_comment = lambda comment_datail: {
+                    'posted': datetime.utcfromtimestamp(comment_datail.created_utc).isoformat() if comment_datail.created_utc else '[No date]',
+                    'author': comment_datail.author.name if comment_datail.author else '[No author]',
+                    'comment_text': comment_datail.body if comment_datail.body else '[No content]',
+                    'permalink': comment_datail.permalink if comment_datail.permalink else '[No link]'
+                }
+
+                detailed_comment = []
+
+                for comment in list(map(modify_comment, comments)):
+                    if search_keywords.lower() in comment['comment_text'].lower():
+                        detailed_comment.append(comment)
+
+                if len(detailed_comment):
+                    reddit_results.append({
+                        'title': submission.title,
+                        'url': submission.url,
+                        'iframeURL': submission.url.replace('https://www.reddit.com', 'https://reddit.artemisdigital.io'),
+                        'posted': datetime.utcfromtimestamp(submission.created_utc).isoformat(),
+                        'id': submission.id,
+                        'Comments': detailed_comment
+                    })
 
                 # submission.comments.replace_more(limit=None)
                 # comment_count = 0
@@ -67,7 +74,7 @@ class ScrapDataAPIReddit(APIView):
 
                 #     if comment_count >= 10:
                 #         break
-                    
+
 
         return render(request, 'reddit_results.html', {'reddit_results': reddit_results})
         # return render(request, 'reddit_results.html', {'reddit_results': reddit_results,'reddit_comments': reddit_comments})
@@ -108,7 +115,7 @@ class ScrapDataAPIYoutube(APIView):
                         part='snippet',
                         videoId=video_id,
                         maxResults=50,
-                        searchTerms='hi'
+                        searchTerms=search_keywords
                     ).execute()
                     comments_response.extend(comments.get('items', []))
             except HttpError as e:

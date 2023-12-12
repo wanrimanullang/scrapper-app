@@ -76,9 +76,9 @@
                     <div class="w-full">
                         <!-- <p class="text-center text-3xl mb-3 font-semibold"> Selected Reddit </p> -->
                         {% for item in reddit_results %}
-                            <div class="shadow-md w-full reddit-topic-detail flex items-center justify-between px-4 py-1 gap-4 mb-2" data-reddit-id="{{item.Id}}">
-                                <div>
-                                    <p class="text-lg">{{ item.Title }}</p>
+                            <div class="shadow-md w-full reddit-topic-detail px-4 py-1 gap-4 mb-2" data-reddit-id="{{item.Id}}">
+                                <div class="mb-4">
+                                    <a href="{{ item.url }}" class="text-lg font-bold hover:underline" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
                                     <!-- <iframe
                                         width="100%"
                                         src="{{ item.IframeURL }}"
@@ -88,21 +88,18 @@
                                     ></iframe> -->
                                     <div class="flex items-center">
                                         <span class="text-gray-700">Posted:</span>
-                                        <p class="text-gray-700 ml-2">{{ item.Posted }}</p>
+                                        <p class="text-gray-700 ml-2">{{ item.posted }}</p>
                                     </div>
                                 </div>
-                                <a href="{{ item.URL }}" class="text-xl font-bold hover:underline" target="_blank" rel="noopener noreferrer">Reply</a>
-                                <!-- {% for comment in item.Comments %} -->
-                                <!-- <div class="bg-white shadow-md p-4 mb-4"> -->
-                                    <!-- <p class="text-gray-600 mb-2">{{ comment.author }}</p> -->
-                                    <!-- <p class="text-gray-800 line-clamp-4">{{ comment.body|safe }}</p> -->
-                                    <!-- <p class="text-gray-500 text-sm mt-2">{{ comment.posted }}</p> -->
-                                    <!-- <a href="https://www.reddit.com{{comment.permalink}}" class="text-gray-500 text-sm mt-2">Reply</a> -->
-                                <!-- </div> -->
-                                <!-- {% endfor %}
-                                {% if item.Comments|length == 0 %}
-                                    <p class="text-gray-600">No comments found.</p>
-                                {% endif %} -->
+                                {% for comment in item.Comments %}
+                                <div class="bg-white shadow-md p-4 mb-4 w-full">
+                                    <p class="text-gray-800 line-clamp-2">{{ comment.comment_text|safe }}</p>
+                                    <div class="w-full flex items-center justify-between mt-2">
+                                        <p class="text-gray-500 text-sm">{{ comment.posted }} by {{ comment.author }}</p>
+                                        <a href="https://www.reddit.com{{comment.permalink}}" class="text-gray-500 text-sm mt-2 font-bold" target="_blank">Reply</a>
+                                    </div>
+                                </div>
+                                {% endfor %}
                             </div>
                         {% endfor %}
                     </div>
