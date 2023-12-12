@@ -47,7 +47,7 @@
         }
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto mt-10">
@@ -59,47 +59,46 @@
         </form>
         <div>
             <div class="mb-8">
-                <div class="grid grid-cols-8 mb-4 gap-8">
-                    <div class="md:col-span-4 lg:col-span-4 col-span-8">
+                <div class="w-full mb-4">
+                    <!-- <div class="w-full">
                         {% for video in youtube_results.items %}
-                            <div class="w-full youtube-topic cursor-pointer mb-12" data-video-id="{{video.id.videoId}}">
-                                <div class="w-full">
-                                    <h2 class="text-xl font-bold mb-2">{{ video.snippet.title }}</h2>
-                                    <p class="text-gray-700 mb-4">{{ video.snippet.description }}</p>
-                                </div>
-                                <!-- <iframe
-                                    width="100%"
-                                    height="360"
-                                    src="https://www.youtube.com/embed/{{ video.id.videoId }}"
-                                    frameborder="0"
-                                    allowfullscreen
-                                ></iframe> -->
+                        <div class="w-full youtube-topic cursor-pointer mb-12" data-video-id="{{video.id.videoId}}">
+                            <div class="w-full">
+                                <a href="https://www.youtube.com/watch?v={{video.id.videoId}}" class="text-xl font-bold mb-2" target="_blank">
+                                    {{ video.snippet.title }}
+                                </a>
+                                <p class="text-gray-700 mb-4">{{ video.snippet.description }}</p>
                             </div>
+                        </div>
                         {% endfor %}
-                    </div>
-                    <div class="md:col-span-4 lg:col-span-4 col-span-8 flex sm:justify-end justify-center">
-                        <div class="w-full h-[1080px] overflow-y-auto sticky top-0">
-                            <p class="text-center text-3xl mb-3 font-semibold"> Selected Video </p>
+                    </div> -->
+                    <div class="w-full flex sm:justify-end justify-center">
+                        <div class="w-full sticky top-0 h-min">
+                            <!-- <p class="text-center text-3xl mb-3 font-semibold"> Selected Video </p> -->
                             {% for video in youtube_results.items %}
                                 <div class="comment-container" data-video-id="{{video.id.videoId}}">
-                                    <div class="w-full mb-12">
+                                    <!-- <div class="w-full">
                                         <div class="w-full">
                                             <h2 class="text-xl font-bold mb-2">{{ video.snippet.title }}</h2>
                                             <p class="text-gray-700 mb-4">{{ video.snippet.description }}</p>
                                         </div>
-                                        <!-- <iframe
-                                            width="100%"
-                                            height="360"
-                                            src="https://www.youtube.com/embed/{{ video.id.videoId }}"
-                                            frameborder="0"
-                                            allowfullscreen
-                                        ></iframe> -->
-                                    </div>
+                                    </div> -->
                                     {% for comment in comments %}
                                         {% if comment.snippet.videoId == video.id.videoId %}
-                                            <div class="bg-white p-4 rounded shadow mb-2 w-full" data-video-id="{{comment.snippet.videoId}}">
-                                                <p class="text-gray-800">{{ comment.snippet.topLevelComment.snippet.textDisplay|safe }}</p>
-                                                <p class="text-gray-600 mt-2">{{ comment.snippet.topLevelComment.snippet.authorDisplayName }} - {{ comment.snippet.topLevelComment.snippet.publishedAt }}</p>
+                                            <div class="bg-white p-4 rounded shadow mb-2 w-full flex flex-row items-center justify-between gap-4" data-video-id="{{comment.snippet.videoId}}">
+                                                <div class="flex gap-4 items-center">
+                                                    <a href="https://www.youtube.com/watch?v={{video.id.videoId}}" class="text-xl font-bold" target="_blank">
+                                                        Video
+                                                    </a>
+                                                    <div>
+                                                        <p class="text-gray-800">{{ comment.snippet.topLevelComment.snippet.textDisplay|safe }}</p>
+                                                        <a class="text-gray-600" target="_blank" href="{{comment.snippet.topLevelComment.snippet.authorChannelUrl}}">
+                                                            {{ comment.snippet.topLevelComment.snippet.authorDisplayName }}
+                                                        </a>
+                                                        <p class="text-gray-600">{{ comment.snippet.topLevelComment.snippet.publishedAt }}</p>
+                                                    </div>
+                                                </div>
+                                                <a href="https://www.youtube.com/watch?v={{video.id.videoId}}&lc={{comment.id}}" target="_blank" class="text-xl font-bold">Reply</a>
                                             </div>
                                         {% endif %}
                                     {% endfor %}
@@ -111,7 +110,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <!-- <script>
         $(document).ready(function () {
             $(".youtube-topic").click(function () {
                 var selectedTopic = $(this).data("video-id");
@@ -124,6 +123,6 @@
             });
             $(".youtube-topic:first").click();
         });
-    </script>
+    </script> -->
 </body>
 </html>
